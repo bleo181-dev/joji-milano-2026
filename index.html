@@ -130,6 +130,84 @@
         box-shadow: var(--panel-shadow);
       }
 
+      .music-panel {
+        margin-top: 1rem;
+        padding: 1rem;
+      }
+
+      .music-head {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 0.8rem;
+        flex-wrap: wrap;
+        margin-bottom: 0.8rem;
+      }
+
+      .music-head h2 {
+        margin: 0;
+        font-family: "Bebas Neue", Impact, sans-serif;
+        letter-spacing: 0.05em;
+        font-size: 1.65rem;
+      }
+
+      .music-head p {
+        margin: 0;
+        color: var(--ink-soft);
+        font-size: 0.93rem;
+      }
+
+      .music-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: 0.75rem;
+      }
+
+      .music-card {
+        border: 1px solid #d9c4ba;
+        border-radius: 14px;
+        background: linear-gradient(155deg, #fffefc, #f6ece7);
+        padding: 0.75rem;
+      }
+
+      .music-card h3 {
+        margin: 0;
+        font-size: 1rem;
+        line-height: 1.2;
+      }
+
+      .music-meta {
+        margin: 0.35rem 0 0.55rem;
+        color: var(--ink-soft);
+        font-size: 0.88rem;
+      }
+
+      .music-card audio {
+        width: 100%;
+      }
+
+      .music-open {
+        display: inline-block;
+        margin-top: 0.55rem;
+        font-size: 0.88rem;
+      }
+
+      .music-loading,
+      .music-error,
+      .music-links {
+        margin: 0;
+      }
+
+      .music-loading,
+      .music-error {
+        color: var(--ink-soft);
+      }
+
+      .music-links {
+        margin-top: 0.5rem;
+        font-size: 0.9rem;
+      }
+
       .toc-panel {
         position: sticky;
         top: 0.75rem;
@@ -330,6 +408,16 @@
         </p>
       </header>
 
+      <section class="music-panel panel" aria-label="Player canzoni di Joji">
+        <div class="music-head">
+          <h2>Joji Player</h2>
+          <p>Anteprime audio riproducibili direttamente da qui.</p>
+        </div>
+        <div id="musicGrid" class="music-grid">
+          <p class="music-loading">Caricamento brani in corso...</p>
+        </div>
+      </section>
+
       <main class="layout">
         <aside class="toc-panel panel" aria-label="Indice rapido">
           <h2>Tracklist</h2>
@@ -348,6 +436,16 @@
 
     <script>
       const NOTE_FILE = "Joji Milano 2026";
+      const JOJI_TRACK_ENDPOINT =
+        "https://itunes.apple.com/search?term=joji&entity=song&limit=40&country=US";
+      const JOJI_SEED_TITLES = [
+        "Glimpse of Us",
+        "Slow Dancing in the Dark",
+        "Sanctuary",
+        "Die For You",
+        "Like You Do",
+        "YUKON (INTERLUDE)"
+      ];
 
       function escapeHtml(value) {
         return String(value)
@@ -367,6 +465,20 @@
           .trim()
           .replace(/\s+/g, "-")
           .replace(/-+/g, "-") || "sezione";
+      }
+
+      function normalizeText(text) {
+        return String(text || "")
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, " ")
+          .trim();
+      }
+
+      function formatDurationMs(milliseconds) {
+        const totalSeconds = Math.max(0, Math.round(Number(milliseconds || 0) / 1000));
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = String(totalSeconds % 60).padStart(2, "0");
+        return minutes + ":" + seconds;
       }
 
       function sanitizeUrl(rawUrl) {
@@ -537,6 +649,124 @@
         return html.join("\n");
       }
 
+      function pickJojiTracks(results) {
+        const uniqueTracks = new Map();
+        for (let i = 0; i < results.length; i += 1) {
+          const item = results[i];
+          const artistName = normalizeText(item.artistName);
+          const trackName = String(item.trackName || "");
+          const previewUrl = String(item.previewUrl || "");
+          if (artistName.indexOf("joji") === -1 || !trackName || !previewUrl) {
+            continue;
+          }
+          const trackKey = normalizeText(trackName);
+          if (!uniqueTracks.has(trackKey)) {
+            uniqueTracks.set(trackKey, item);
+          }
+        }
+
+        const selected = [];
+        for (let i = 0; i < JOJI_SEED_TITLES.length; i += 1) {
+          const key = normalizeText(JOJI_SEED_TITLES[i]);
+          if (!uniqueTracks.has(key)) {
+            continue;
+          }
+          selected.push(uniqueTracks.get(key));
+          uniqueTracks.delete(key);
+        }
+
+        const leftovers = Array.from(uniqueTracks.values());
+        for (let i = 0; i < leftovers.length && selected.length < 6; i += 1) {
+          selected.push(leftovers[i]);
+        }
+
+        return selected.slice(0, 6);
+      }
+
+      function createMusicCard(track) {
+        const card = document.createElement("article");
+        card.className = "music-card";
+
+        const title = document.createElement("h3");
+        title.textContent = String(track.trackName || "Brano Joji");
+        card.appendChild(title);
+
+        const meta = document.createElement("p");
+        meta.className = "music-meta";
+        const parts = [];
+        if (track.collectionName) {
+          parts.push(String(track.collectionName));
+        }
+        if (track.trackTimeMillis) {
+          parts.push(formatDurationMs(track.trackTimeMillis));
+        }
+        meta.textContent = parts.length ? parts.join(" · ") : "Anteprima audio";
+        card.appendChild(meta);
+
+        const player = document.createElement("audio");
+        player.controls = true;
+        player.preload = "none";
+        player.src = sanitizeUrl(String(track.previewUrl || ""));
+        card.appendChild(player);
+
+        const openLink = document.createElement("a");
+        openLink.className = "music-open";
+        openLink.href = sanitizeUrl(
+          String(track.trackViewUrl || track.collectionViewUrl || "https://music.apple.com")
+        );
+        openLink.target = "_blank";
+        openLink.rel = "noopener noreferrer";
+        openLink.textContent = "Apri brano completo";
+        card.appendChild(openLink);
+
+        return card;
+      }
+
+      function renderMusicFallback(container, message) {
+        container.innerHTML = "";
+
+        const error = document.createElement("p");
+        error.className = "music-error";
+        error.textContent = message;
+        container.appendChild(error);
+
+        const links = document.createElement("p");
+        links.className = "music-links";
+        links.innerHTML =
+          'Puoi ascoltarlo qui: <a href="https://open.spotify.com/artist/3MZsBdqDrRTJihTHQrO6Dq" target="_blank" rel="noopener noreferrer">Spotify</a> · <a href="https://www.youtube.com/@88rising/search?query=Joji" target="_blank" rel="noopener noreferrer">YouTube</a>.';
+        container.appendChild(links);
+      }
+
+      async function renderMusicSection() {
+        const grid = document.getElementById("musicGrid");
+        if (!grid) {
+          return;
+        }
+
+        try {
+          const response = await fetch(JOJI_TRACK_ENDPOINT, { cache: "no-store" });
+          if (!response.ok) {
+            throw new Error("HTTP " + response.status);
+          }
+
+          const payload = await response.json();
+          const tracks = pickJojiTracks(Array.isArray(payload.results) ? payload.results : []);
+          if (!tracks.length) {
+            throw new Error("Nessun brano disponibile.");
+          }
+
+          grid.innerHTML = "";
+          for (let i = 0; i < tracks.length; i += 1) {
+            grid.appendChild(createMusicCard(tracks[i]));
+          }
+        } catch (error) {
+          renderMusicFallback(
+            grid,
+            "Non riesco a caricare ora le anteprime audio automatiche."
+          );
+        }
+      }
+
       function buildToc(container) {
         const toc = document.getElementById("toc");
         toc.innerHTML = "";
@@ -633,6 +863,7 @@
       }
 
       setupToTopButton();
+      renderMusicSection();
       renderPage();
     </script>
   </body>
