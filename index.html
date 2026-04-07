@@ -16,14 +16,14 @@
     />
     <style>
       :root {
-        --bg: #f5f2ee;
-        --paper: #fffefc;
-        --ink: #1e1a17;
-        --ink-soft: #5c5048;
-        --accent: #b7382c;
-        --accent-soft: #e8beb6;
-        --line: #d7ccc4;
-        --panel-shadow: 0 20px 45px rgba(38, 22, 12, 0.14);
+        --bg: #cec08a;
+        --paper: #f2e7bc;
+        --ink: #241f10;
+        --ink-soft: #5f5332;
+        --accent: #6f4a08;
+        --accent-soft: #c8a152;
+        --line: #a28d52;
+        --panel-shadow: 0 22px 50px rgba(31, 24, 8, 0.28);
       }
 
       * {
@@ -41,10 +41,10 @@
         font-family: "Manrope", "Segoe UI", sans-serif;
         color: var(--ink);
         background:
-          radial-gradient(circle at 8% 12%, #f0c8bc 0%, transparent 36%),
-          radial-gradient(circle at 86% 10%, #dfd7ca 0%, transparent 34%),
-          radial-gradient(circle at 12% 90%, #d9cec4 0%, transparent 30%),
-          linear-gradient(160deg, #f7f4f1 0%, var(--bg) 52%, #efe8e1 100%);
+          radial-gradient(circle at 12% 12%, #e5cc74 0%, transparent 34%),
+          radial-gradient(circle at 87% 13%, #a79860 0%, transparent 36%),
+          radial-gradient(circle at 14% 88%, #8c8256 0%, transparent 30%),
+          linear-gradient(162deg, #e2d29a 0%, var(--bg) 52%, #bfae73 100%);
       }
 
       body::before {
@@ -52,8 +52,8 @@
         position: fixed;
         inset: 0;
         pointer-events: none;
-        opacity: 0.35;
-        background-image: radial-gradient(circle at 1px 1px, #b8aca3 1px, transparent 0);
+        opacity: 0.42;
+        background-image: radial-gradient(circle at 1px 1px, #6f6543 1px, transparent 0);
         background-size: 3px 3px;
         mix-blend-mode: multiply;
       }
@@ -74,10 +74,10 @@
         position: relative;
         overflow: hidden;
         border-radius: 24px;
-        border: 1px solid #cfb7ad;
+        border: 1px solid #9c8551;
         background:
-          linear-gradient(125deg, rgba(255, 248, 244, 0.94), rgba(252, 241, 236, 0.96)),
-          linear-gradient(85deg, #fff7f4, #f6ede7);
+          linear-gradient(125deg, rgba(250, 238, 190, 0.96), rgba(233, 213, 149, 0.94)),
+          linear-gradient(90deg, #f4e4ae, #cebb80);
         box-shadow: var(--panel-shadow);
         padding: clamp(1rem, 2vw, 1.35rem);
       }
@@ -90,7 +90,7 @@
         font-family: "Bebas Neue", Impact, sans-serif;
         font-size: 1.15rem;
         letter-spacing: 0.09em;
-        color: rgba(163, 47, 36, 0.6);
+        color: rgba(68, 50, 12, 0.62);
       }
 
       .eyebrow {
@@ -98,7 +98,7 @@
         font-size: 0.78rem;
         letter-spacing: 0.15em;
         font-weight: 800;
-        color: #8c3f35;
+        color: #4d3908;
         text-transform: uppercase;
       }
 
@@ -126,7 +126,7 @@
       .panel {
         border-radius: 20px;
         border: 1px solid var(--line);
-        background: color-mix(in srgb, var(--paper) 90%, #ffffff 10%);
+        background: color-mix(in srgb, var(--paper) 92%, #f8f0cc 8%);
         box-shadow: var(--panel-shadow);
       }
 
@@ -164,9 +164,9 @@
       }
 
       .music-card {
-        border: 1px solid #d9c4ba;
+        border: 1px solid #ad9051;
         border-radius: 14px;
-        background: linear-gradient(155deg, #fffefc, #f6ece7);
+        background: linear-gradient(155deg, #f7ebc4, #d5bf82);
         padding: 0.75rem;
       }
 
@@ -240,8 +240,8 @@
       .toc-list a:hover,
       .toc-list a:focus-visible {
         border-left-color: var(--accent);
-        background: #f8ede8;
-        color: #7f261d;
+        background: #e7d295;
+        color: #4c3405;
       }
 
       .toc-level-2,
@@ -317,8 +317,8 @@
 
       .content code {
         font-family: "Consolas", "Menlo", monospace;
-        background: #f4e5df;
-        border: 1px solid #e6c8be;
+        background: #ddca90;
+        border: 1px solid #ab8f4f;
         border-radius: 7px;
         padding: 0.07rem 0.3rem;
         font-size: 0.92em;
@@ -331,10 +331,10 @@
       }
 
       .error {
-        border: 1px solid #d59a91;
+        border: 1px solid #aa7f41;
         border-radius: 13px;
-        background: #fff3f1;
-        color: #6e1e16;
+        background: #f2e1ae;
+        color: #543c08;
         padding: 0.8rem;
       }
 
@@ -344,17 +344,17 @@
         bottom: 0.9rem;
         width: 43px;
         height: 43px;
-        border: 1px solid #c7887d;
+        border: 1px solid #8f7334;
         border-radius: 999px;
-        background: linear-gradient(165deg, #fff7f4, #f3d7cf);
-        color: #7c261c;
+        background: linear-gradient(165deg, #f4e4ae, #c8af67);
+        color: #473103;
         font-size: 1.1rem;
         line-height: 1;
         display: inline-flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        box-shadow: 0 10px 24px rgba(62, 24, 16, 0.24);
+        box-shadow: 0 10px 24px rgba(52, 39, 10, 0.32);
         z-index: 25;
         opacity: 0;
         transform: translateY(10px) scale(0.96);
